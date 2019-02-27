@@ -19,11 +19,10 @@ DAY-1:
 	  to build them from scratch. Using Chef, Servers can 
 	  be reproduced easily.
 
-	- Enables infrastrucute as a code.
+	- Enables infrastrucute as a code. (IAC)
 	
 	- Chef can automatically detect the faults and repair 
-	  them.
-	  
+	  them.	  
 
 ChefDK Installation:
 ===================
@@ -114,7 +113,8 @@ DAY-3:
 	  action :delete
 	end 
 
-- :delete is called "symbol".
+- :delete is called "symbol"
+
 
 #
 Chef in production environment:
@@ -143,7 +143,7 @@ Hosted Chef server setup:
 ============================
 1. Sign up for hosted Chef (https://manage.chef.io/login)
 2. Create an organization/Project	
-	Go to Administration --> Organizations --> Create --> Project name.
+	Go to Administration --> Organizations --> Create --> Give a Project name.
 
 Work station Setup:
 ======================
@@ -157,7 +157,9 @@ Work station Setup:
 Generate these two files from 'hosted Chef server' and place them under "flipkart/.chef" directory to establish the connection between your workstation and the chef server.
 	
 How do you generate knife.rb & username.pem files from chef server?
-	- Generate knife.rb: Administration--> click on organization-->generate knife config
+	
+	- Go to Hosted chef and Login
+	- Generate knife.rb: Administration--> click on organization--> generate knife config
 	- Generate username.pem: Administration--> Users --> click on your Username --> "Reset key"
 
 3. Validate Chef server conection from workstation:
@@ -187,8 +189,8 @@ $ knife cookbook list
 Bring up the Ubuntu "Node":
 ================================
 1)
-- Write a Dockerfile to create a docker node
-	Take this Dockerfile from "Docker&Chef_Integration" folder
+- Write a Dockerfile to create a node container
+	Take this 'Dockerfile' from "Docker&Chef_Integration" folder (uploaded to git)
 
 2)
 - create docker image using
@@ -203,7 +205,7 @@ Bring up the Ubuntu "Node":
 Bootstrap the node:
 - The bootstrap process connects workstation to your node over SSH.
 
-knife bootstrap 172.17.0.2 --ssh-user gamut --ssh-password 'gamut' --sudo --use-sudo-password --node-name gamut --run-list 'recipe[learn_chef_apache2]'	 
+knife bootstrap 172.17.0.2 --ssh-user gamut --ssh-password 'gamut' --sudo --use-sudo-password --node-name gamut --run-list 'recipe[learn_chef_apache2]'		 
 
 - Bootstrap performs below steps:
 	1. Installs chef-client in node.
@@ -215,7 +217,7 @@ To verify, run below commands..
 	$ knife node list
  	$ knife node show gamut (view data about the node)
 
-TESTING: "learn_chef_apache2" Cookbook implementation In the node.
+TESTING: "learn_chef_apache" Cookbook implementation In the node.
 	http://172.17.0.2:80
 
 
@@ -243,10 +245,11 @@ This role concept describes what cookbooks need to be executed in a node.
 Creating Roles:
 ================
 High level Notes:
- 1 Create a role in your workstation
- 2 Attach recipes/cookbooks to the Role
+ 1 Create a 'role' directory in your workstation
+ 2 Write Json file to create a role with some name and specify recipes/cookbooks 
+   of that Role
  3 Upload the Role to Chef server
- 4 Attach Role to the node
+ 4 Attach the node to Role
  5 Run chef-client in the node
 
 #
@@ -265,27 +268,25 @@ $ knife role from file roles/web.json
 Set run-list to our node / Set Role to our node / Attache the node to role
 $ knife node run_list set gamut "role[web]" --> Add the node to a Role
 
+
 #
 Login to the node and initialte "chef-run" manually.
 $ chef-client
 
-
-- View commands - 
-
 #
-Check if Role is created on your Chef server:
-$ knife role list
+Verification commands
 
-#
-Check the Roles details / recepies attached to the role:
-$ knife role show web
+- How do you check the run-list of a node (Or) How do you know what cookbooks are configured to run in a node
+	$ knife node show gamut --run-list	
 
-# Remove the node from the Role
-$ knife node run_list remove gamut role[web] --> Remove the node from a Role
+- Remove the node from a Role
+	$ knife node run_list remove gamut role[web]
 
-#
-Check the run-list of our node:
-$ knife node show gamut --run-list
+- Check if Role is created on your Chef server:
+	$ knife role list
+
+- Check the Roles details / recepies attached to the role:
+	$ knife role show web	
 
 
 Creating Cookbooks:
@@ -300,8 +301,9 @@ Creating Cookbooks:
 
 Recipe code:
 ---------------
-execute "run apt-get update command" do
-  command "apt-get update"
+apt_update 'Update the apt cache daily' do
+  frequency 86_400
+  action :periodic
 end
 
 package "nginx" do
@@ -315,13 +317,13 @@ end
 execute "this command will start nginx server" do
   command "service nginx start"
 end
-------------	
+----------------	
 
 4. Place our application code in below directory for deployment
 	cd cookbooks/nginx/files/default
 	vim index.html
 index.html code:
-------------
+-----------------------
 <html>
    <body>
      <h1 style="color:red;">Gamutkart Online Training Portal</h1>
@@ -352,6 +354,7 @@ $ sudo chef-client
 Running chef-client command from all servers:
 - use crontab
 - use shell scripts
+- manuall chef-client run
 
 
 DAY-7:
@@ -367,4 +370,5 @@ $ knife cookbook delete learn_chef_apache2 --all --yes
 $ knife role delete web --yes
 
 
+ 
 
