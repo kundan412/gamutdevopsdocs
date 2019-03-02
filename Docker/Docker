@@ -138,6 +138,7 @@ $ apt-get install openssh-server
 - Start the server
 $ service ssh start (status/stop)
 
+
 - Create an user and set up password
 $ useradd -m -d /home/gamut -s /bin/bash gamut
 $ passwd gamut
@@ -266,12 +267,13 @@ Agenda:
 
 
 # Images in Build and Deployments OR DevOps world!
+
 a. Works In my machine problem.
 b. Developers can set local env.
 c. Issue? don't troubleshoot. Just throw it away and create new instantly.
 d. Auto scale your environment
 e. No need to live with complex, redundant configurations.
-f. You can leverage/utilize local machines's computing power when you need to test your code on multiple machines, instead of waiting for DevOps team to supply or wasting extra computing power. you already have 500GM, 16GB RAM right? are you utilising it? NO! then whey again you need extra hardware?
+f. You can leverage/utilize local machines's computing power when you need to test your code on multiple machines, instead of waiting for DevOps team to supply or wasting extra computing power. you already have 500GB, 16GB RAM right? are you utilising it? NO! then whey again you need extra hardware?
 
 
 DAY-5:
@@ -304,7 +306,7 @@ sudo apt-get purge nginx nginx-common
 # Creating docker image using "docker commit" command
 
 PROJECT-1:
-	Create an image which will ship application code along with nginx configuration.
+	Create an image which will ship your application code along with nginx configuration.
 
 -create container
 	$ docker run -it --name school-app-base-cont ubuntu /bin/bash
@@ -334,7 +336,7 @@ PROJECT-1:
 	$ docker login
 	$ docker push nageshvkn/nginx-img
 
-Note: Now you have succussfully containerized your application and published the iamge using DockerHub
+Note: Now you have succussfully containerized your application and published the iamge to DockerHub
 
 Note: To verify your image, create a container as your customer
 
@@ -347,11 +349,11 @@ PROJECT-2:
 DAY-6:
 # Creating docker image using "docker build" command
 =================
-	- mkdir school-app 
-	- cd school-app
+	- mkdir gamutgurus
+	- cd gamutgurus
 	- touch Dockerfile
 
-	--> 'school-app' directory is called "context" or "build context".
+	--> 'gamutgurus' directory is called "context" or "build context".
 		It contains the code, files or other data that you want to include in the image.
 	
 	- Write Dokckerfile:
@@ -371,7 +373,7 @@ index.html:
 </html>
  	
 # Building docker image:
-	$ cd school-app
+	$ cd gamutgurus
 	$ docker build -t="nageshvkn/nginx-img" .
 	$ docker build -f MyDockerfile -t="nageshvkn/nginx-img" . [If Dockerfile name
 																	is different]
@@ -396,7 +398,6 @@ Testing Image
 	$ http://172.17.0.2:80
 
 
-
 # Creating docker hub account
 - Docker Hub (https://hub.docker.com/)
 	- Each Repository can contain multiple images
@@ -418,6 +419,7 @@ official images are controled by Docker core team.
 	- ubuntu:16.04
 	  ubuntu- is image name
 	  16.04 - is called tag
+
 
 # Pulling the images
 	- docker pull tomcat
@@ -465,6 +467,7 @@ Docker Image layers
 DAY-8:
 Gamutkart Real application;
 ============================
+Agenda:
 - Build and deployments with Docker containers.
 - Real Containerization with Docker.
 - Creating dockerized environments.
@@ -478,30 +481,29 @@ Given a chance how do you dockerize your application?
 
 
 1. Clone the source code from Git or any other V.C.S
+	$ git clone https://github.com/nageshvkn/gamutkart2.git
+ 
 2. Build the code using your favourate build tool Maven/ANT
-3. Create docker image for the application(gamutkart) with
-   war file, tomcat,n...etc.
+	$ mvn install
 
-4. Create docker containers using './create-env.sh 10'
-5. Launch the gamutkart application from all containers.
-
-Step:3 --> creating docker image for gamutkart with tomcat 
-		   server.
-Dockerfile:
+3. Create docker image for the application(gamutkart2) with
+   war file, tomcat,jdk...etc using below Dockerfile.
+	Dockerfile:
+	-------------
 	FROM tomcat:8.0
 	COPY gamutkart.war /usr/local/tomcat/webapps
 	ENTRYPOINT /usr/local/tomcat/bin/startup.sh && bash
 
-Build the Image:
-	$ docker build -t "gamut/gamutkart" .
+4. Build the Image using below command
+	$ docker build -t "nageshvkn/gamutkart-img" .
 
-Step:4
-Create the container manually using below command or user our 'create-env.sh' script.	
-	$ docker run --name gamutkart_server -d -it --rm nageshvkn/gamutkart /bin/bash
+5. Run below shell script to create an environment with give no. containers
+	$ ./create-env.sh 10
 
-Step:5
-	http://IP:8080/gamutkart
+6. Observer all containers created using above script ($ docker ps)
 
+7. Launch the gamutkart application from all containers.
+	$ http://IP:8080/gamutkart
 
 #
 Docker and Jenkins Integration
@@ -567,6 +569,16 @@ ENV JAVA_HOME /home/gamut/Distros/jdk1.8.0_151
 
 # How do you pass arguments to the container during "docker run" command?
 	CMD ["/usr/sbin/useradd", "-m", "-d", "/home/gamut", "-s", "/bin/bash", "gamut"]
+
+
+Misc:
+====
+--> docker volumes
+--> port mapping
+--> docker smarm
+
+
+
 
 
 
